@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.post('https://github.com/aLeXaNdRe989/WebSocket/settings/hooks/475946697', (req, res) => {
+app.post('https://webhook.site/e0ce84b0-ef5c-41b9-b686-e65c71003bef', (req, res) => {
     const data = req.body;
     receivedHooks.push(data);
     console.log(data);
