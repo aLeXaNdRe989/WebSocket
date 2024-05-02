@@ -4,7 +4,7 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const io = new Server(server);
-const receivedHooks = [];
+const receivedHooks = []; 
 
 server.listen(8080, () => {
     console.log('En écoute sur *:8080');
