@@ -4,22 +4,21 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const io = new Server(server);
-const receivedHooks = []; 
+const receivedHooks = [];
+var createHandler = require('github-webhook-handler')
+var handler = createHandler({ path: '/webhook', secret: 'myhashsecret' })
 
 server.listen(8080, () => {
     console.log('En écoute sur *:8080');
 });
 
+handler.on('push', function (event) {
+    console.log(event);
+    io.emit('hook', "Un nouveau commit vient d'être envoyé !");
+})
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
-});
-
-app.post('https://webhook.site/e0ce84b0-ef5c-41b9-b686-e65c71003bef', (req, res) => {
-    const data = req.body;
-    receivedHooks.push(data);
-    console.log(data);
-    res.json({ message: 'Valeur reçue avec succès' });
-    io.emit('hook', "Un nouveau commit vient d'être envoyé !");
 });
 
 io.on('connection', function connection(ws) {
