@@ -1,0 +1,85 @@
+<html>
+    <head></head>
+    <body>
+        <form id="Envoi">
+            <input type="text" id="message">
+            <input type="submit" value="Envoyer">
+        </form>
+
+        <ul id="messages"></ul>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        //import axios from "axios";
+
+        var socket = io();
+
+        var form = document.getElementById('Envoi');
+        var input = document.getElementById('message');
+        var affichage = document.getElementById('messages');
+
+        var user = "";
+
+        if(user===""){
+            user = prompt("Renseignez votre prénom :", user);
+            socket.emit('user', user);
+            //axios.post('/webhooks', user);
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('message envoyé', input.value, user);
+                input.value = '';
+            }
+        });
+
+        addEventListener("input", (event) => {
+            socket.emit("typing", user);
+        });
+
+        socket.on('chat message', function(message, Tuser){
+            var nvMessage = document.createElement('li');
+            nvMessage.textContent = Tuser+" : "+message;
+            affichage.appendChild(nvMessage);
+            var balise = document.getElementById(Tuser);
+            if(Tuser==user){
+                nvMessage.style.color="blue";
+            }
+            if(balise!=null){
+                affichage.removeChild(balise);
+            }
+        });
+
+        socket.on('connexion', function(data){
+            var nvMessage = document.createElement('li');
+            nvMessage.textContent = data;
+            nvMessage.style.color="green";
+            affichage.appendChild(nvMessage);
+        });
+
+        window.addEventListener("beforeunload", (event) => {
+            socket.emit('closing', user);
+        });
+
+        socket.on('deconnexion', function(data){
+            var nvMessage = document.createElement('li');
+            nvMessage.textContent = data;
+            nvMessage.style.color="red";
+            affichage.appendChild(nvMessage);
+        });
+
+        socket.on('typing', function(Tuser){
+            var balise = document.getElementById(Tuser);
+            console.log(balise==null);
+            if(Tuser!==user && balise==null){
+                var nvMessage = document.createElement('li');
+                nvMessage.textContent = Tuser+" est en train d'écrire...";
+                nvMessage.style.color = "yellow";
+                nvMessage.id = Tuser;
+                affichage.appendChild(nvMessage);
+            }
+        });
+    </script>
+</html>
