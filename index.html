@@ -10,9 +10,6 @@
     </body>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-
-        //import axios from "axios";
-
         var socket = io();
 
         var form = document.getElementById('Envoi');
@@ -24,7 +21,6 @@
         if(user===""){
             user = prompt("Renseignez votre prénom :", user);
             socket.emit('user', user);
-            //axios.post('/webhooks', user);
         }
 
         form.addEventListener('submit', function(e) {
@@ -44,12 +40,19 @@
             nvMessage.textContent = Tuser+" : "+message;
             affichage.appendChild(nvMessage);
             var balise = document.getElementById(Tuser);
-            if(Tuser==user){
+            if(Tuser===user){
                 nvMessage.style.color="blue";
             }
             if(balise!=null){
                 affichage.removeChild(balise);
             }
+        });
+
+        socket.on('hook', function (data){
+            var nvMessage = document.createElement('li');
+            nvMessage.textContent = data;
+            nvMessage.style.color="purple";
+            affichage.appendChild(nvMessage);
         });
 
         socket.on('connexion', function(data){
